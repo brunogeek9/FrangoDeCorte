@@ -1,0 +1,228 @@
+FUNCTION_BLOCK frangoDeCorte
+	
+	VAR_INPUT /* variaveis de entrada */
+		idadeAve : REAL;
+		temperaturaDoAr : REAL;
+		umidadeRelativaDoAr : REAL;
+	END_VAR 
+		
+	FUZZIFY idadeAve 
+		TERM idade1 := (1,1) (7,1) (8,0); /*I1 */
+		TERM idade2 := (7,0) (9,1) (14,1) (15,0); /*I2 */
+		TERM idade3 := (14,0) (15,1) (21,1); /*I3 */
+	END_FUZZIFY
+	
+	FUZZIFY temperaturaDoAr
+		TERM T1 := (23,1) (24,1) (26,0);
+		TERM T2	:= (25,0) (25.9,1) (27,1) (28.5,0);
+		TERM T3	:= (28,0) (28.1,1) (29,1) (30,0);
+		TERM T4	:= (29,0) (30,1) (32,1) (33,0);
+		TERM T5	:= (32,0) (33,1) (35,1);
+	END_FUZZIFY
+	
+	FUZZIFY umidadeRelativaDoAr
+		TERM UR1 := (30,1) (50,1) (58,0); /*baixa */
+		TERM UR2 := (55,0) (60,1) (70,1) (75,0); /*adequada */
+		TERM UR3 := (70,0) (75,1) (90,1); /*alta */
+	END_FUZZIFY
+	
+	VAR_OUTPUT/*variaveis de saida */
+	
+		CR: REAL; /* consumo racao */
+		GP: REAL; /* ganho de peso */
+		CA: REAL; /* conversao alimentar */
+	END_VAR
+	
+	DEFUZZIFY CR
+		TERM CR1:= (80, 0.7)(88,1) (180,0) ; /*ruim */
+		TERM CR2:= (80,0)  (170, 1)(190,0);	/*ruim */
+		TERM CR3:= (180,0) (190,1) (240,0);/*mediano */
+		TERM CR4:= (220,0) (290,1) (380,0);/*mediano */
+		TERM CR5:= (280,0) (330,1) (385,0);/*mediano */
+		TERM CR6:= (380,0) (385,1) (460,0);/*bom */
+		TERM CR7:= (380,0) (520,1) (595,0);/*bom */
+		TERM CR8:= (510,0) (660,1) (750,0);/*muito bom */
+		TERM CR9:= (710,0)(880,1) ;/*muito bom */
+		
+		METHOD : COG;
+		DEFAULT := 0;
+	END_DEFUZZIFY 
+	
+	DEFUZZIFY GP 
+		TERM GP1 := (100,1) (130,0); /*GP10 Rotulo ruim*/ 
+		TERM GP2 := (100,0) (150,1) (180,0); /*GP11 Rotulo ruim*/
+		TERM GP3 := (150,0) (180,1) (200,0); /*GP12 */
+		TERM GP4 := (180,0) (210,1) (230,0); /*GP13 */
+		TERM GP5 := (212,0) (250,1) (300,0); /*GP14*/
+		TERM GP6 := (245,0) (300,1) (370,0); /*GP15 */
+		TERM GP7 := (330,0) (370,1) (410,0); /*GP16 */
+		TERM GP8 := (370,0) (410,1) (460,0); /*GP17 */
+		TERM GP9 := (410,0) (440,1) (465,0); /*GP18 */
+		TERM GP10 := (465,0) (520,1) (570,0) ;/*GP19 */
+		TERM GP11 := (520,0) (600,1); /*GP20 */
+		
+		METHOD : COG;
+		DEFAULT := 0;
+	END_DEFUZZIFY	
+	
+	DEFUZZIFY CA 
+		TERM CA1 := (0.6,0) (0.85,1)(1.05,0); /*CA21 */
+		TERM CA2 := (1,0) (1.11,1)(1.26,0);   /*CA22 */
+		TERM CA3 := (1.10,0) (1.21,1)(1.3,0); /*CA23 */
+		TERM CA4 := (1.2,0) (1.38,1) (1.5,0); /*CA24 */
+		TERM CA5 := (1.35,0) (1.45,1) (1.55,0); /*CA25 */
+		TERM CA6 := (1.4,0) (1.55,1) (1.6,0); /*CA26 */
+		METHOD : COG;
+		DEFAULT := 0;
+		
+	END_DEFUZZIFY	
+	
+	RULEBLOCK regras1
+	AND : MIN;
+	ACT : MIN;
+	ACCU : MAX;
+	
+	RULE 1: IF idadeAve IS idade1 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR1 
+	THEN CR IS CR1, GP IS GP1, CA IS CA2; 
+	
+	RULE 2: IF idadeAve IS idade1 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR2 
+	THEN CR IS CR1, GP IS GP1, CA IS CA2;
+	
+	RULE 3: IF idadeAve IS idade1 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR1,GP IS GP1,CA IS CA2;
+	
+	RULE 4: IF idadeAve IS idade1 AND temperaturaDoAr IS T2 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR1, GP IS GP1, CA IS CA2;
+	
+	RULE 5: IF idadeAve IS idade1 AND temperaturaDoAr IS T2 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR1, GP IS GP1 , CA IS CA2;
+	
+	RULE 6: IF idadeAve IS idade1 AND temperaturaDoAr IS T2 AND umidadeRelativaDoAr IS UR3 
+	THEN CR IS CR2, GP IS GP1, CA IS CA2;
+	
+	RULE 7: IF idadeAve IS idade1 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR2, GP IS GP4, CA IS CA1;
+	
+	RULE 8: IF idadeAve IS idade1 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR2, GP IS GP4, CA IS CA1;
+	
+	RULE 8: IF idadeAve IS idade1 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR2, GP IS GP1, CA IS CA2;
+	
+	RULE 9: IF idadeAve IS idade1 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR3, GP IS GP3, CA IS CA2;
+	
+	RULE 10: IF idadeAve IS idade1 AND temperaturaDoAr IS T4 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR1, GP IS GP2, CA IS CA1;
+	
+	RULE 11: IF idadeAve IS idade1 AND temperaturaDoAr IS T4 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR1, GP IS GP1, CA IS CA2;
+	
+	RULE 12: IF idadeAve IS idade1 AND temperaturaDoAr IS T4 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR2, GP IS GP2, CA IS CA2;
+	
+	RULE 13: IF idadeAve IS idade1 AND temperaturaDoAr IS T5 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR2, GP IS GP2, CA IS CA2;
+	
+	RULE 14: IF idadeAve IS idade1 AND temperaturaDoAr IS T5 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR2, GP IS GP2, CA IS CA2;
+	
+	RULE 15: IF idadeAve IS idade1 AND temperaturaDoAr IS T5 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR2, GP IS GP2, CA IS CA2;
+	
+	RULE 16: IF idadeAve IS idade2 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR4, GP IS GP4, CA IS CA3;
+	
+	RULE 16: IF idadeAve IS idade2 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR4, GP IS GP4, CA IS CA3;
+	
+	RULE 17: IF idadeAve IS idade2 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR5, GP IS GP5, CA IS CA5;
+	
+	RULE 18: IF idadeAve IS idade2 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR4, GP IS GP4, CA IS CA2;
+	
+	RULE 19: IF idadeAve IS idade2 AND temperaturaDoAr IS T2 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR4, GP IS GP4, CA IS CA4;
+	
+	RULE 20: IF idadeAve IS idade2 AND temperaturaDoAr IS T2 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR4, GP IS GP5, CA IS CA3;
+	
+	RULE 21: IF idadeAve IS idade2 AND temperaturaDoAr IS T2 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR4, GP IS GP5, CA IS CA3;
+	
+	RULE 22: IF idadeAve IS idade2 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR4, GP IS GP5, CA IS CA3;
+	
+	RULE 23: IF idadeAve IS idade2 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR4, GP IS GP5, CA IS CA4;
+	
+	RULE 24: IF idadeAve IS idade2 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR7, GP IS GP7, CA IS CA4;
+	
+	RULE 25: IF idadeAve IS idade2 AND temperaturaDoAr IS T4 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR6, GP IS GP6, CA IS CA4;
+	
+	RULE 26: IF idadeAve IS idade2 AND temperaturaDoAr IS T4 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR5, GP IS GP6, CA IS CA2;
+	
+	RULE 27: IF idadeAve IS idade2 AND temperaturaDoAr IS T4 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR5, GP IS GP5, CA IS CA5;
+	
+	RULE 28: IF idadeAve IS idade2 AND temperaturaDoAr IS T5 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR4, GP IS GP4, CA IS CA5;
+	
+	RULE 29: IF idadeAve IS idade2 AND temperaturaDoAr IS T5 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR3, GP IS GP4, CA IS CA5;
+	
+	RULE 30: IF idadeAve IS idade2 AND temperaturaDoAr IS T5 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR3, GP IS GP4, CA IS CA5;
+	
+	RULE 31: IF idadeAve IS idade3 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR7, GP IS GP8, CA IS CA5;
+	
+	RULE 32: IF idadeAve IS idade3 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR8, GP IS GP8, CA IS CA6;
+	
+	RULE 33: IF idadeAve IS idade3 AND temperaturaDoAr IS T1 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR8, GP IS GP8, CA IS CA6;
+	
+	RULE 34: IF idadeAve IS idade3 AND temperaturaDoAr IS T2 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR7, GP IS GP7, CA IS CA5;
+	
+	RULE 35: IF idadeAve IS idade3 AND temperaturaDoAr IS T2 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR5, GP IS GP6, CA IS CA5;
+	
+	RULE 36: IF idadeAve IS idade3 AND temperaturaDoAr IS T2 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR9, GP IS GP11, CA IS CA5;
+	
+	RULE 37: IF idadeAve IS idade3 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR8, GP IS GP9, CA IS CA5;
+	
+	RULE 38: IF idadeAve IS idade3 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR9, GP IS GP6, CA IS CA5;
+	
+	RULE 39: IF idadeAve IS idade3 AND temperaturaDoAr IS T3 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR8, GP IS GP6, CA IS CA5;
+	
+	RULE 40: IF idadeAve IS idade3 AND temperaturaDoAr IS T4 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR8, GP IS GP10, CA IS CA6;
+	
+	RULE 41: IF idadeAve IS idade3 AND temperaturaDoAr IS T4 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR8, GP IS GP8, CA IS CA6;
+	
+	RULE 42: IF idadeAve IS idade3 AND temperaturaDoAr IS T4 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR7, GP IS GP7, CA IS CA6;
+	
+	RULE 43: IF idadeAve IS idade3 AND temperaturaDoAr IS T5 AND umidadeRelativaDoAr IS UR1
+	THEN CR IS CR7, GP IS GP7, CA IS CA6;
+	
+	RULE 44: IF idadeAve IS idade3 AND temperaturaDoAr IS T5 AND umidadeRelativaDoAr IS UR2
+	THEN CR IS CR7, GP IS GP6, CA IS CA6;
+	
+	RULE 45: IF idadeAve IS idade3 AND temperaturaDoAr IS T5 AND umidadeRelativaDoAr IS UR3
+	THEN CR IS CR6, GP IS GP6, CA IS CA6;
+		
+	END_RULEBLOCK	
+	
+END_FUNCTION_BLOCK
